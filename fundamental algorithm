@@ -1,0 +1,89 @@
+// C++ program for stable matching fundamental algorithm
+#include <iostream> 
+#include <string.h> 
+#include <stdio.h> 
+using namespace std; 
+
+const int num = 6; //number of men or women or couple
+
+bool womanPrefer(int prefer[num][num], int w, int m, int m1){ 
+	for(int i=0;i<num;i++){ 
+		//find m and m1 which appear first, the first one is the woman prefer  
+		if (prefer[w][i] == m1) 
+		   return true; 
+		if (prefer[w][i] == m) 
+			return false; 
+	} 
+} 
+
+void stablematching(int prefer[num][num],int wprefer[num][num]){
+	//store women's partners in this array and this is the output array
+	int wPartner[num];
+	//this array show whether the man is free or has a partner already
+	bool mFree[num];
+	//all the woman are (temporarility)engaged to the imaginary man
+	memset(wPartner, -1, sizeof(wPartner)); 
+	memset(mFree, true, sizeof(mFree)); 
+	int count=0;//number of couple
+	
+	while(count<num){
+		int suitor;//NO. of man
+        for (suitor=0; suitor< num; suitor++){ 
+            if (mFree[suitor] == true){ 
+                break; 
+			   }
+			}
+			for(int i=0;i<num&&mFree[suitor]==true;i++){
+			int wSuitor=prefer[suitor][i];
+			if(wPartner[wSuitor-num]==-1){
+				wPartner[wSuitor-num]=suitor;
+				mFree[suitor]=false;
+				count++;
+			}else{
+				int suitor1=wPartner[wSuitor-num];
+				if(womanPrefer(wprefer,wSuitor,suitor,suitor1)==true){
+					wPartner[wSuitor-num]=suitor1;
+					mFree[suitor1]=false;
+					mFree[suitor]=true;
+				}
+			}
+		}
+			
+	      //withdraw woman from men's preference
+			if(suitor<num){	
+			   for(int i=0;i<num-1;i++){
+				   prefer[suitor][i]=prefer[suitor][i+1];
+			   }
+			}
+   }
+	cout << "Woman   Man" << endl; 
+	for (int i = 0; i < num; i++) 
+       cout << " " << i+num << "\t" << wPartner[i] << endl; 
+}
+
+int main(){
+   //men's preference
+	int prefer[num][num]={ 
+		  {6,7,8,9,10,11}, 
+        {6,7,8,9,10,11}, 
+        {6,7,8,9,10,11}, 
+        {6,7,8,9,10,11}, 
+		  {6,7,8,9,10,11},
+		  {6,7,8,9,10,11},
+	};
+	//women's preference
+	int wprefer[num][num]={  
+        {0,1,2,3,4,5}, 
+        {0,1,2,3,4,5}, 
+        {0,1,2,3,4,5}, 
+        {0,1,2,3,4,5},
+        {0,1,2,3,4,5},
+		  {0,1,2,3,4,5},		  
+	};
+   	stablematching(prefer,wprefer);
+}
+
+
+
+
+  
